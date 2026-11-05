@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync – Smart Personal Study & Task Scheduler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Chart.js local offline script with CDN fallback -->
+    <script src="/js/lib/chart.min.js"></script>
+    <script>
+        if (!window.Chart) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">S</div>
+            <div class="brand-info">
+                <h1>StudySync</h1>
+                <span>Smart Study Hub</span>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a class="nav-item active" data-view="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item" data-view="schedule">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>My Schedule</span>
+            </a>
+            <a class="nav-item" data-view="learning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span>My Learning</span>
+            </a>
+            <a class="nav-item" data-view="revisions">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                <span>Revision Tracker</span>
+            </a>
+            <a class="nav-item" data-view="calendar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>Calendar</span>
+            </a>
+            <a class="nav-item" data-view="exams-assignments">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                <span>Assignments & Exams</span>
+            </a>
+            <a class="nav-item" data-view="completed-tasks">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Completed Tasks</span>
+            </a>
+            <a class="nav-item" data-view="missed-tasks">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <span>Missed Tasks</span>
+                <span class="nav-badge danger" id="nav-missed-badge" style="display:none;">0</span>
+            </a>
+            <a class="nav-item" data-view="pomodoro">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                <span>Focus Timer</span>
+            </a>
+            <a class="nav-item" data-view="planner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                <span>Smart Planner</span>
+            </a>
+            <a class="nav-item" data-view="analytics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span>Analytics</span>
+            </a>
+            <a class="nav-item" data-view="settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="pomodoro-pill-card" onclick="App.switchView('pomodoro')">
+                <div class="pomo-info">
+                    <span class="pomo-label" id="sidebar-pomo-label">Focus Timer</span>
+                    <span class="pomo-time" id="sidebar-pomo-time">25:00</span>
+                </div>
+                <div style="color:var(--primary);">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobile-menu-toggle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <div class="date-display">
+                    <span class="current-day" id="current-day-text">Thursday</span>
+                    <span class="current-date" id="current-date-text">Loading date...</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Theme Toggle Button -->
+                <button class="btn-icon" id="btn-toggle-theme" title="Toggle Light / Dark Mode">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+
+                <!-- Notifications Bell -->
+                <div style="position:relative;">
+                    <button class="btn-icon" id="btn-toggle-notifs" title="Reminders & Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span class="badge-dot" id="notif-badge-count" style="display:none;"></span>
+                    </button>
+                    <!-- Notification Center Dropdown -->
+                    <div id="notif-dropdown-card" style="display:none; position:absolute; right:0; top:48px; width:340px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); z-index:500; overflow:hidden;">
+                        <div style="padding:0.85rem 1rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:700; font-size:0.9rem;">Reminders & Alerts</span>
+                            <button style="background:none; border:none; color:var(--primary); font-size:0.75rem; font-weight:600; cursor:pointer;" onclick="Notifications.markAllRead()">Mark all read</button>
+                        </div>
+                        <div id="notif-center-list" style="max-height:360px; overflow-y:auto;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Profile Badge -->
+                <div class="user-badge" onclick="App.switchView('settings')" style="cursor:pointer;" title="Account & Preferences">
+                    <div class="user-avatar">S</div>
+                    <div class="user-details">
+                        <span class="user-name">Sainath</span>
+                        <span class="user-role">CSE Student</span>
+                    </div>
+                </div>
+
+                <!-- Quick Add Task Button -->
+                <button class="btn btn-primary" onclick="App.openCreateTaskModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Quick Add Task</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Notification Permission Info Banner -->
+        <div id="notif-permission-banner" style="display:none; background:var(--primary-light); border-bottom:1px solid var(--primary-border); padding:0.75rem 2rem; align-items:center; justify-content:space-between; font-size:0.875rem; color:var(--primary-text);">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+                <span><strong>Enable Browser Notifications:</strong> Receive timely task start alerts, revision reminders, and exam deadlines while StudySync is open.</span>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-sm btn-primary" onclick="Notifications.requestPermission()">Enable</button>
+                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('notif-permission-banner').style.display='none'">Later</button>
+            </div>
+        </div>
+
+        <!-- Content Container -->
+        <main class="content-container">
+
+            <!-- 1. DASHBOARD VIEW -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Welcome back, Sainath 👋</h2>
+                        <p>Let's maintain momentum across your CS curriculum, revisions, and college deadlines.</p>
+                    </div>
+                    <div style="display:flex; gap:0.75rem;">
+                        <button class="btn btn-secondary" onclick="App.switchView('planner')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                            Smart Daily Planner
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Summary Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Today's Tasks</span>
+                            <div class="stat-icon" style="background:var(--primary-light); color:var(--primary);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="dash-total-tasks">0</div>
+                        <div class="stat-subtext">
+                            <span id="dash-high-prio-count" style="color:#ef4444; font-weight:600;">0 urgent</span> scheduled
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Completed Today</span>
+                            <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="dash-completed-tasks">0</div>
+                        <div class="stat-subtext">
+                            <span>Daily Completion: <strong id="dash-daily-pct" style="color:var(--primary);">0%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Pending / In Progress</span>
+                            <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="dash-pending-tasks">0</div>
+                        <div class="stat-subtext">
+                            <span>Weekly Productivity: <strong id="dash-weekly-rate">0%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Overdue / Missed</span>
+                            <div class="stat-icon" style="background:#fef2f2; color:#dc2626;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="dash-missed-tasks" style="color:#ef4444;">0</div>
+                        <div class="stat-subtext">
+                            <a href="#" onclick="App.switchView('missed-tasks')" style="color:var(--primary); font-weight:600; text-decoration:none;">View & Reschedule &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Streak & Study Time Banner -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1rem 1.5rem; margin-bottom:2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-sm);">
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <span style="font-size:1.8rem;">🔥</span>
+                        <div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Daily Study Streak</div>
+                            <div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);" id="dash-streak-count">0 Days</div>
+                        </div>
+                    </div>
+
+                    <div style="flex:1; max-width:340px; margin:0 1.5rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; margin-bottom:0.4rem;">
+                            <span>Today's Progress</span>
+                            <span id="dash-study-time">0 mins focused</span>
+                        </div>
+                        <div class="progress-bar-container" style="margin:0;">
+                            <div class="progress-bar-fill" id="dash-daily-progress-bar" style="width:0%;"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-primary" onclick="App.switchView('pomodoro')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                        Start Focus Session
+                    </button>
+                </div>
+
+                <!-- Today's Focus Section -->
+                <div class="focus-banner">
+                    <div class="focus-banner-header">
+                        <div class="focus-title">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                            <span>Today's Focus</span>
+                        </div>
+                        <span style="font-size:0.8rem; font-weight:600; color:var(--primary-text);">Highest priority & urgent tasks</span>
+                    </div>
+                    <div class="focus-list" id="dash-focus-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Dashboard Two-Column Layout -->
+                <div class="dashboard-grid">
+                    <!-- Left: Today's Hourly Study Timetable -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Today's Study Timetable</span>
+                            </div>
+                            <button class="btn btn-sm btn-secondary" onclick="App.openCreateTaskModal()">+ Add Slot</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="timetable-list" id="dash-timetable-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Revisions + Exams & Assignments -->
+                    <div style="display:flex; flex-direction:column; gap:1.75rem;">
+                        <!-- Upcoming Revisions Reminder Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                                    <span>Upcoming Revisions</span>
+                                </div>
+                                <a href="#" onclick="App.switchView('revisions')" style="font-size:0.8rem; color:var(--primary); font-weight:600; text-decoration:none;">View All</a>
+                            </div>
+                            <div class="card-body" id="dash-revisions-list" style="padding-top:0.5rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Approaching Exams & Assignments Countdown -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                                    <span>Approaching Exams & Deadlines</span>
+                                </div>
+                                <a href="#" onclick="App.switchView('exams-assignments')" style="font-size:0.8rem; color:var(--primary); font-weight:600; text-decoration:none;">Manage</a>
+                            </div>
+                            <div class="card-body" id="dash-academic-list" style="padding-top:0.5rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. MY SCHEDULE (TASK MANAGEMENT) VIEW -->
+            <section id="view-schedule" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>My Schedule & Task Management</h2>
+                        <p>Complete task organization with category filters, priority tagging and conflict detection.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="App.openCreateTaskModal()">+ Add New Task</button>
+                </div>
+
+                <!-- Filter Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <div class="search-input-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" class="form-control" id="task-filter-search" placeholder="Search tasks by title...">
+                        </div>
+                        <select class="form-select" id="task-filter-category">
+                            <option value="">All Categories</option>
+                            <option value="DSA">DSA</option>
+                            <option value="Java Backend">Java Backend</option>
+                            <option value="Python">Python</option>
+                            <option value="AI/ML">AI/ML</option>
+                            <option value="SQL and DBMS">SQL and DBMS</option>
+                            <option value="College">College</option>
+                            <option value="Assignment">Assignment</option>
+                            <option value="Practical">Practical</option>
+                            <option value="Exam">Exam</option>
+                            <option value="Project">Project</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select class="form-select" id="task-filter-priority">
+                            <option value="">All Priorities</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                        <select class="form-select" id="task-filter-status">
+                            <option value="">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Missed">Missed</option>
+                        </select>
+                        <select class="form-select" id="task-filter-date">
+                            <option value="">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Task List Container -->
+                <div class="task-list" id="tasks-container">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- 3. MY LEARNING VIEW -->
+            <section id="view-learning" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>My Learning – Progress & Curriculum Tracker</h2>
+                        <p>Track subjects, chapters and topics with real-time progress and seamless "Resume Where You Left Off".</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="Learning.openNewPathModal()">+ Create Learning Path</button>
+                </div>
+
+                <!-- Learning Path Selector Cards -->
+                <div class="learning-path-grid" id="learning-path-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Selected Learning Path Details (Resume Hero & Syllabus) -->
+                <div id="selected-path-details-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 4. REVISION TRACKER VIEW -->
+            <section id="view-revisions" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Smart Spaced Revision Tracker</h2>
+                        <p>Scientific spaced repetition (1d, 3d, 7d, 15d) to cement programming topics into long-term memory.</p>
+                    </div>
+                </div>
+
+                <div class="toolbar" style="margin-bottom:1.5rem;">
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-sm btn-secondary rev-filter-btn active" data-filter="all" onclick="App.loadRevisions('all')">All Revisions</button>
+                        <button class="btn btn-sm btn-secondary rev-filter-btn" data-filter="today" onclick="App.loadRevisions('today')">Due Today</button>
+                        <button class="btn btn-sm btn-secondary rev-filter-btn" data-filter="upcoming" onclick="App.loadRevisions('upcoming')">Upcoming (30d)</button>
+                        <button class="btn btn-sm btn-secondary rev-filter-btn" data-filter="missed" onclick="App.loadRevisions('missed')">Overdue Revisions</button>
+                        <button class="btn btn-sm btn-secondary rev-filter-btn" data-filter="completed" onclick="App.loadRevisions('completed')">Completed Archive</button>
+                    </div>
+                </div>
+
+                <div class="task-list" id="revisions-container">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- 5. CALENDAR VIEW -->
+            <section id="view-calendar" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Study Calendar & Timetable</h2>
+                        <p>Visual schedule view across days, weeks and months with conflict protection.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="App.openCreateTaskModal()">+ Schedule Task</button>
+                </div>
+
+                <div class="calendar-view-header">
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <button class="btn btn-sm btn-secondary" onclick="Calendar.prev()">&larr; Prev</button>
+                        <button class="btn btn-sm btn-secondary" onclick="Calendar.goToToday()">Today</button>
+                        <button class="btn btn-sm btn-secondary" onclick="Calendar.next()">Next &rarr;</button>
+                        <h3 id="calendar-period-title" style="font-size:1.15rem; font-weight:700; margin-left:0.5rem;"></h3>
+                    </div>
+                    <div style="display:flex; gap:0.35rem;">
+                        <button class="btn btn-sm btn-secondary cal-mode-btn active" data-mode="month" onclick="Calendar.setViewMode('month')">Month</button>
+                        <button class="btn btn-sm btn-secondary cal-mode-btn" data-mode="week" onclick="Calendar.setViewMode('week')">Week</button>
+                        <button class="btn btn-sm btn-secondary cal-mode-btn" data-mode="day" onclick="Calendar.setViewMode('day')">Day</button>
+                    </div>
+                </div>
+
+                <div id="calendar-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 6. ASSIGNMENTS & EXAMS VIEW -->
+            <section id="view-exams-assignments" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Academic Workload – Exams & Assignments</h2>
+                        <p>Track examinations, practical lab submissions, syllabus completion and auto-generate preparation tasks.</p>
+                    </div>
+                    <div style="display:flex; gap:0.75rem;">
+                        <button class="btn btn-secondary" onclick="App.openAddAssignmentModal()">+ Add Assignment / Practical</button>
+                        <button class="btn btn-primary" onclick="App.openAddExamModal()">+ Add Examination</button>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.75rem;">
+                    <!-- Exams Column -->
+                    <div>
+                        <h3 style="font-size:1.2rem; font-weight:700; margin-bottom:1rem; color:var(--text-primary);">Upcoming Examinations</h3>
+                        <div id="exams-list-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Assignments & Practicals Column -->
+                    <div>
+                        <h3 style="font-size:1.2rem; font-weight:700; margin-bottom:1rem; color:var(--text-primary);">Assignments & Lab Practicals</h3>
+                        <div id="assignments-list-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. COMPLETED TASKS VIEW -->
+            <section id="view-completed-tasks" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Completed Tasks Archive</h2>
+                        <p>Historical record of all finished study sessions and completed college tasks.</p>
+                    </div>
+                </div>
+                <div class="task-list" id="completed-tasks-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 8. MISSED TASKS VIEW -->
+            <section id="view-missed-tasks" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Missed & Overdue Tasks</h2>
+                        <p>Tasks whose scheduled end-time has passed without completion. Reschedule or complete late.</p>
+                    </div>
+                </div>
+                <div class="task-list" id="missed-tasks-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 9. POMODORO FOCUS TIMER VIEW -->
+            <section id="view-pomodoro" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Pomodoro Focus Timer</h2>
+                        <p>Eliminate distractions with focused 25-minute study intervals linked directly to database study metrics.</p>
+                    </div>
+                </div>
+
+                <div class="pomodoro-container">
+                    <div class="pomo-mode-tabs">
+                        <button class="pomo-mode-tab active" data-mode="focus" onclick="Pomodoro.setMode('focus')">Focus (25m)</button>
+                        <button class="pomo-mode-tab" data-mode="shortBreak" onclick="Pomodoro.setMode('shortBreak')">Short Break (5m)</button>
+                        <button class="pomo-mode-tab" data-mode="longBreak" onclick="Pomodoro.setMode('longBreak')">Long Break (15m)</button>
+                    </div>
+
+                    <div class="timer-circle-wrap">
+                        <svg class="timer-svg" viewBox="0 0 240 240">
+                            <circle class="timer-bg-circle" cx="120" cy="120" r="110"></circle>
+                            <circle class="timer-progress-circle" id="timer-progress-circle" cx="120" cy="120" r="110"></circle>
+                        </svg>
+                        <div class="timer-text-wrap">
+                            <div class="timer-countdown" id="timer-countdown">25:00</div>
+                            <div class="timer-label" id="timer-session-label">Deep Work Focus</div>
+                        </div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button class="btn btn-secondary btn-icon" onclick="Pomodoro.reset()" title="Reset Timer">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        </button>
+                        <button class="btn-timer-large" id="btn-timer-toggle" onclick="Pomodoro.toggle()" title="Start / Pause">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </button>
+                        <button class="btn btn-secondary btn-icon" onclick="Pomodoro.skip()" title="Skip Mode">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                        </button>
+                    </div>
+
+                    <div class="pomo-task-picker">
+                        <label class="form-label">Link Focus Session to Task:</label>
+                        <select class="form-select" id="pomo-task-select" style="max-width:380px; margin:0.5rem auto 0.75rem;">
+                            <!-- Populated dynamically -->
+                        </select>
+                        <div style="font-size:0.85rem; color:var(--text-muted);">
+                            Active Session: <strong id="pomo-active-task-name" style="color:var(--primary);">General Focus</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. SMART DAILY PLANNER VIEW -->
+            <section id="view-planner" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Smart Daily Planner</h2>
+                        <p>Algorithmic schedule synthesis balancing spaced revisions, approaching exam deadlines, and daily study capacity.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <div class="card-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <label class="form-label" style="margin:0;">Target Date:</label>
+                            <input type="date" class="form-control" id="planner-target-date" style="width:auto;">
+                        </div>
+                        <button class="btn btn-primary" onclick="Planner.generatePlan()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            Generate Strategic Schedule
+                        </button>
+                    </div>
+                </div>
+
+                <div id="planner-results-container">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                        <h4>Smart Daily Planner is Ready</h4>
+                        <p>Click <strong>Generate Strategic Schedule</strong> to compute an optimal time-blocked plan based on your active workload and revision intervals.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11. ANALYTICS VIEW -->
+            <section id="view-analytics" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Productivity Analytics & Insights</h2>
+                        <p>Metrics computed directly from your real database study sessions and completed tasks.</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Summary KPIs -->
+                <div class="stats-grid" style="margin-bottom:2rem;">
+                    <div class="stat-card">
+                        <span class="stat-title">Study Streak</span>
+                        <div class="stat-value" id="analytics-streak-val">0 Days 🔥</div>
+                        <span class="stat-subtext">Consecutive active study days</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Total Study Time</span>
+                        <div class="stat-value" id="analytics-hours-val">0 hrs</div>
+                        <span class="stat-subtext">Focus hours logged</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Weekly Completion</span>
+                        <div class="stat-value" id="analytics-weekly-val">0%</div>
+                        <span class="stat-subtext">Last 7 days task rate</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Revision Consistency</span>
+                        <div class="stat-value" id="analytics-revision-val">0%</div>
+                        <span class="stat-subtext">Spaced repetitions retained</span>
+                    </div>
+                </div>
+
+                <!-- Charts 2x2 Grid -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.75rem;">
+                    <!-- Chart 1: Daily Completed vs Created -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Daily Completed vs Scheduled Tasks</span>
+                        </div>
+                        <div class="card-body" style="height:320px;">
+                            <canvas id="chart-daily-tasks"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Weekly Trend -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Weekly Completion Rate (%)</span>
+                        </div>
+                        <div class="card-body" style="height:320px;">
+                            <canvas id="chart-weekly-trend"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 3: Subject-wise Breakdown -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Subject-Wise Study Hours</span>
+                        </div>
+                        <div class="card-body" style="height:320px;">
+                            <canvas id="chart-subject-hours"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 4: Task Status -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Task Status Breakdown</span>
+                        </div>
+                        <div class="card-body" style="height:320px;">
+                            <canvas id="chart-task-status"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 12. SETTINGS VIEW -->
+            <section id="view-settings" class="view-section">
+                <div class="section-header">
+                    <div class="section-title-wrap">
+                        <h2>Settings & Personalization</h2>
+                        <p>Configure study targets, spaced revision intervals, notification preferences and timer durations.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="max-width:700px;">
+                    <div class="card-body">
+                        <form id="settings-form" onsubmit="App.saveSettingsForm(event)">
+                            <div class="form-group" style="margin-bottom:1.25rem;">
+                                <label class="form-label">Full Name & Degree</label>
+                                <input type="text" class="form-control" value="Sainath – B.Tech Computer Science and Engineering" readonly style="background:var(--bg-card-subtle);">
+                            </div>
+
+                            <div class="form-row" style="margin-bottom:1.25rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Daily Available Study Hours</label>
+                                    <input type="number" class="form-control" id="setting-study-hours" min="1" max="16" value="6">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Preferred Study Timing</label>
+                                    <select class="form-select" id="setting-preferred-time">
+                                        <option value="Morning">Morning (08:30 - 12:30)</option>
+                                        <option value="Afternoon">Afternoon (13:00 - 17:00)</option>
+                                        <option value="Evening">Evening (17:00 - 21:00)</option>
+                                        <option value="Night">Night (20:00 - 00:00)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:1.25rem;">
+                                <label class="form-label">Default Spaced Revision Intervals (Days)</label>
+                                <input type="text" class="form-control" id="setting-rev-intervals" value="1, 3, 7, 15" placeholder="Comma separated days, e.g. 1, 3, 7, 15">
+                                <span style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">Controls automatic spacing when topics are marked completed.</span>
+                            </div>
+
+                            <div class="form-row" style="margin-bottom:1.25rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Reminder Lead Time (Minutes)</label>
+                                    <input type="number" class="form-control" id="setting-reminder-lead" min="0" max="60" value="10">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Week Starts On</label>
+                                    <select class="form-select" id="setting-week-start">
+                                        <option value="Monday">Monday</option>
+                                        <option value="Sunday">Sunday</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="margin-bottom:1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Pomodoro Focus (Mins)</label>
+                                    <input type="number" class="form-control" id="setting-pomo-focus" min="5" max="120" value="25">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Short Break (Mins)</label>
+                                    <input type="number" class="form-control" id="setting-pomo-short" min="1" max="30" value="5">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Long Break (Mins)</label>
+                                    <input type="number" class="form-control" id="setting-pomo-long" min="5" max="60" value="15">
+                                </div>
+                            </div>
+
+                            <div style="border-top:1px solid var(--border-color); padding-top:1.25rem; margin-bottom:1.5rem; display:flex; flex-direction:column; gap:0.75rem;">
+                                <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.875rem;">
+                                    <input type="checkbox" id="setting-notif-sound" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                                    <span>Play completion & reminder synthesized audio chimes</span>
+                                </label>
+                                <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.875rem;">
+                                    <input type="checkbox" id="setting-browser-notif" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                                    <span>Browser notifications when tab is active</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- 1. Task Modal (Create & Edit) -->
+    <div class="modal-overlay" id="modal-task-form">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title" id="task-modal-title-text">Create New Task</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-task-form')">&times;</button>
+            </div>
+            <form id="task-form" onsubmit="App.saveTaskForm(event, false)">
+                <input type="hidden" id="task-modal-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Task Title *</label>
+                        <input type="text" class="form-control" id="task-modal-title" placeholder="e.g. DSA: Binary Tree Traversals & Diameter" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="task-modal-category">
+                                <option value="DSA">DSA</option>
+                                <option value="Java Backend">Java Backend</option>
+                                <option value="Python">Python</option>
+                                <option value="AI/ML">AI/ML</option>
+                                <option value="SQL and DBMS">SQL and DBMS</option>
+                                <option value="College">College</option>
+                                <option value="Assignment">Assignment</option>
+                                <option value="Practical">Practical</option>
+                                <option value="Exam">Exam</option>
+                                <option value="Project">Project</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Task Type</label>
+                            <select class="form-select" id="task-modal-type">
+                                <option value="Learning">Learning</option>
+                                <option value="Revision">Revision</option>
+                                <option value="Assignment">Assignment</option>
+                                <option value="Practical">Practical</option>
+                                <option value="Examination">Examination</option>
+                                <option value="Project">Project</option>
+                                <option value="Personal activity">Personal activity</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Scheduled Date</label>
+                            <input type="date" class="form-control" id="task-modal-date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="task-modal-priority">
+                                <option value="High">High Priority</option>
+                                <option value="Medium" selected>Medium Priority</option>
+                                <option value="Low">Low Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="task-modal-start-time" value="09:00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="task-modal-end-time" value="10:30">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Estimated Duration (Mins)</label>
+                            <input type="number" class="form-control" id="task-modal-duration" value="90">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reminder (Mins Before)</label>
+                            <input type="number" class="form-control" id="task-modal-reminder" value="10">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description & Resources</label>
+                        <textarea class="form-control" id="task-modal-desc" rows="2" placeholder="e.g. LeetCode #543, review recursion stack space"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Optional Personal Notes</label>
+                        <textarea class="form-control" id="task-modal-notes" rows="2" placeholder="Key takeaways, formulas, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-task-form')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Conflict Warning Modal -->
+    <div class="modal-overlay" id="modal-conflict-warning">
+        <div class="modal-container" style="max-width:480px;">
+            <div class="modal-header" style="border-bottom-color:#fde68a; background:#fffbeb;">
+                <h3 class="modal-title" style="color:#b45309; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Schedule Conflict Detected
+                </h3>
+                <button class="modal-close" onclick="App.closeModal('modal-conflict-warning')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="conflict-box">
+                    <div id="conflict-warning-desc">Another task is already scheduled in this time slot.</div>
+                </div>
+                <p style="font-size:0.875rem; color:var(--text-secondary); margin-top:0.5rem;">
+                    Would you like to override and schedule anyway, or adjust your timetable?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="App.closeModal('modal-conflict-warning')">Adjust Time</button>
+                <button class="btn btn-primary" onclick="App.confirmOverrideConflict()">Override & Save Anyway</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Reschedule Task Modal -->
+    <div class="modal-overlay" id="modal-reschedule-task">
+        <div class="modal-container" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Reschedule Task</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-reschedule-task')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reschedule-task-id">
+                <div class="form-group">
+                    <label class="form-label">New Date</label>
+                    <input type="date" class="form-control" id="reschedule-date" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="reschedule-start-time">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="reschedule-end-time">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="App.closeModal('modal-reschedule-task')">Cancel</button>
+                <button class="btn btn-primary" onclick="App.submitReschedule()">Update Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Reschedule Revision Modal -->
+    <div class="modal-overlay" id="modal-reschedule-rev">
+        <div class="modal-container" style="max-width:400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Reschedule Revision</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-reschedule-rev')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reschedule-rev-id">
+                <div class="form-group">
+                    <label class="form-label">New Scheduled Date</label>
+                    <input type="date" class="form-control" id="reschedule-rev-date" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="App.closeModal('modal-reschedule-rev')">Cancel</button>
+                <button class="btn btn-primary" onclick="App.submitRescheduleRev()">Save Date</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Add Exam Modal -->
+    <div class="modal-overlay" id="modal-add-exam">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Academic Examination</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-add-exam')">&times;</button>
+            </div>
+            <form id="exam-form" onsubmit="App.saveExamForm(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Examination Name *</label>
+                        <input type="text" class="form-control" id="exam-modal-name" placeholder="e.g. Midterm Theory Exam" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Subject *</label>
+                            <input type="text" class="form-control" id="exam-modal-subject" placeholder="e.g. Data Structures & Algorithms" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="exam-modal-priority">
+                                <option value="High" selected>High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Exam Date *</label>
+                            <input type="date" class="form-control" id="exam-modal-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Exam Time</label>
+                            <input type="time" class="form-control" id="exam-modal-time" value="10:00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Syllabus / Topics Covered</label>
+                        <textarea class="form-control" id="exam-modal-syllabus" rows="2" placeholder="e.g. Chapters 1-4, Stacks, Queues, Trees"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Target Score / Grade</label>
+                            <input type="text" class="form-control" id="exam-modal-target" placeholder="e.g. 90+ / A+">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location / Notes</label>
+                            <input type="text" class="form-control" id="exam-modal-notes" placeholder="Room number, open-book, etc.">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-add-exam')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Examination</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. Add Assignment / Practical Modal -->
+    <div class="modal-overlay" id="modal-add-assignment">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Assignment / Practical</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-add-assignment')">&times;</button>
+            </div>
+            <form id="assignment-form" onsubmit="App.saveAssignmentForm(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="assign-modal-title" placeholder="e.g. DBMS Lab Practical File" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="assign-modal-subject" placeholder="e.g. Database Systems">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" id="assign-modal-type">
+                                <option value="Assignment">Assignment</option>
+                                <option value="Practical">Practical / Lab Submission</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Submission Deadline *</label>
+                            <input type="date" class="form-control" id="assign-modal-deadline" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Submission Time</label>
+                            <input type="time" class="form-control" id="assign-modal-time" value="23:59">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Details & Guidelines</label>
+                        <textarea class="form-control" id="assign-modal-details" rows="2" placeholder="Submission format, portal link, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Practical / Lab Details</label>
+                        <input type="text" class="form-control" id="assign-modal-practical" placeholder="Batch details, apparatus, viva syllabus">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-add-assignment')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Workload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 7. Create Learning Path Modal -->
+    <div class="modal-overlay" id="modal-create-path">
+        <div class="modal-container" style="max-width:480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Learning Path</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-create-path')">&times;</button>
+            </div>
+            <form onsubmit="Learning.saveNewLearningPath(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Learning Path Title *</label>
+                        <input type="text" class="form-control" id="new-path-title" placeholder="e.g. System Design & Distributed Systems" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="new-path-category">
+                            <option value="DSA">DSA</option>
+                            <option value="Java Backend">Java Backend</option>
+                            <option value="Python">Python</option>
+                            <option value="AI/ML">AI/ML</option>
+                            <option value="SQL and DBMS">SQL and DBMS</option>
+                            <option value="Other" selected>Other Course</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description / Goal</label>
+                        <textarea class="form-control" id="new-path-description" rows="2" placeholder="Target skills, roadmap objectives"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-create-path')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Path</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 8. Add Topic Modal -->
+    <div class="modal-overlay" id="modal-add-topic">
+        <div class="modal-container" style="max-width:480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Topic to Curriculum</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-add-topic')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <select class="form-select" id="topic-modal-subject-select"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chapter</label>
+                    <select class="form-select" id="topic-modal-chapter-select"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Topic Title *</label>
+                    <input type="text" class="form-control" id="topic-modal-title" placeholder="e.g. Graph Traversals (BFS & DFS)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="topic-modal-desc" rows="2" placeholder="Key concepts, practice problems"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-add-topic')">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-new-topic">Add Topic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. Topic Notes Modal -->
+    <div class="modal-overlay" id="modal-topic-notes">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Topic Notes: <span id="notes-modal-topic-title" style="color:var(--primary);"></span></h3>
+                <button class="modal-close" onclick="App.closeModal('modal-topic-notes')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Personal Study Notes & Key Formulas:</label>
+                    <textarea class="form-control" id="topic-notes-textarea" rows="8" placeholder="Type your summaries, code syntax, cheat-sheet reminders here..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-topic-notes')">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-topic-notes">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. Topic Complete & Spaced Repetition Prompt Modal -->
+    <div class="modal-overlay" id="modal-topic-complete">
+        <div class="modal-container" style="max-width:440px;">
+            <div class="modal-header" style="background:var(--primary-light);">
+                <h3 class="modal-title" style="color:var(--primary-text); display:flex; align-items:center; gap:0.5rem;">
+                    🎉 Topic Completed!
+                </h3>
+                <button class="modal-close" onclick="App.closeModal('modal-topic-complete')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;" id="topic-complete-title"></p>
+                <p style="font-size:0.875rem; color:var(--text-secondary); margin-bottom:1rem;">
+                    Great achievement! To retain this knowledge permanently, would you like StudySync to schedule spaced repetition revisions?
+                </p>
+                <label style="display:flex; align-items:center; gap:0.6rem; padding:0.75rem; background:var(--bg-card-subtle); border-radius:var(--radius-md); cursor:pointer;">
+                    <input type="checkbox" id="chk-schedule-spaced-rev" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                    <span style="font-size:0.875rem; font-weight:600;">Schedule Spaced Revisions (+1d, +3d, +7d, +15d)</span>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="App.closeModal('modal-topic-complete')">Skip</button>
+                <button class="btn btn-primary" id="btn-confirm-complete-topic">Confirm & Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Core Application JavaScript Modules -->
+    <script src="/js/api.js"></script>
+    <script src="/js/notifications.js"></script>
+    <script src="/js/pomodoro.js"></script>
+    <script src="/js/calendar.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script src="/js/planner.js"></script>
+    <script src="/js/learning.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
