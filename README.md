@@ -80,9 +80,22 @@
 - **In-App Notification Center**: Notification bell dropdown with unread badge counter.
 - **Toast Alerts**: Floating notifications for success, error, and conflict warnings.
 
-### 12. Settings & Personalization
+### 12. Mobile Phone Calendar & Alarms Sync (.ics & Google Calendar)
+- **RFC 5545 `.ics` Export**: Live calendar feed with embedded `BEGIN:VALARM` triggers (10m before tasks, 1-day & 1-hour before exams, 2-hours before deadlines, 15m before spaced revisions).
+- **Native Phone Alarms**: Compatible with Google Calendar, Samsung Calendar, and Apple Calendar—rings your phone even when your PC is turned off and the browser is closed.
+- **1-Click Google Calendar Event Launcher**: Individual task action to schedule items directly into Google Calendar.
+
+### 13. AI Study Advisor & Diagnostics
+- **Automated Workload Diagnostics**: Real-time analysis of subject balance, DSA vs development distribution, revision coverage, and exam readiness scores.
+- **Actionable AI Recommendations**: Immediate suggestions to improve study consistency and prevent topic neglect.
+
+### 14. Global Topic & Syllabus Search (Ctrl+K)
+- **Instant Search Modal**: Search across all CS curricula (DSA, Java, Python, SQL) and jump directly into the topic in the curriculum tree.
+
+### 15. Settings, Shortcuts & Personalization
 - **Theme**: Light Mode & Dark Mode with instant toggle and persistence.
-- **Customizable Targets**: Daily study hours, preferred timing, revision intervals, Pomodoro focus/break durations, week start day.
+- **Keyboard Shortcuts**: Quick shortcuts (`Q` Add Task, `P` Pomodoro, `D` Dashboard, `S` Schedule, `L` Learning, `A` Analytics, `T` Theme Toggle, `?` Help).
+- **Data Backup & Print**: Full JSON database backup and printable daily timetable view.
 
 ---
 
