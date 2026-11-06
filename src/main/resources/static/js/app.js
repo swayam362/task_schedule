@@ -516,6 +516,9 @@ const App = {
     },
 
     renderTaskList(container, tasks) {
+        if (!this.tasksCache) this.tasksCache = {};
+        tasks.forEach(t => this.tasksCache[t.id] = t);
+
         if (tasks.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -555,6 +558,9 @@ const App = {
                     </div>
                     <div class="task-actions">
                         ${!isCompleted ? `<button class="btn btn-sm btn-outline-primary" onclick="App.startPomodoroForTask('${t.id}')">Focus</button>` : ''}
+                        <button class="btn btn-sm btn-secondary" onclick="App.openGoogleCalendarById('${t.id}')" title="Sync to Google Calendar & Phone Alarms">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </button>
                         <button class="btn btn-sm btn-secondary" onclick="App.openRescheduleModal('${t.id}', '${t.date || ''}', '${t.startTime || ''}', '${t.endTime || ''}')">Reschedule</button>
                         <button class="btn btn-sm btn-secondary" onclick="App.openEditTaskModal('${t.id}')">Edit</button>
                         <button class="btn btn-sm btn-secondary" style="color:#ef4444;" onclick="App.deleteTask('${t.id}')">Delete</button>
@@ -1320,6 +1326,34 @@ const App = {
         } catch (e) {
             Notifications.toast('Failed to export backup: ' + e.message, 'error');
         }
+    },
+
+    // Mobile Calendar Sync (.ics & Google Calendar)
+    openCalendarSyncModal() {
+        this.openModal('modal-calendar-sync');
+    },
+
+    openGoogleCalendarById(taskId) {
+        if (!this.tasksCache) this.tasksCache = {};
+        const t = this.tasksCache[taskId];
+        if (!t) return;
+        const details = (t.notes || t.description || 'StudySync Task') + (t.category ? ` [Category: ${t.category}]` : '') + ` [Priority: ${t.priority || 'Medium'}]`;
+        this.openGoogleCalendarTask(t.title, t.date, t.startTime, t.endTime, details);
+    },
+
+    openGoogleCalendarTask(title, date, startTime, endTime, details) {
+        if (!date) date = new Date().toISOString().split('T')[0];
+        const cleanDate = date.replace(/-/g, '');
+        let datesParam;
+        if (startTime && endTime) {
+            const startClean = startTime.replace(/:/g, '') + '00';
+            const endClean = endTime.replace(/:/g, '') + '00';
+            datesParam = `${cleanDate}T${startClean}/${cleanDate}T${endClean}`;
+        } else {
+            datesParam = `${cleanDate}/${cleanDate}`;
+        }
+        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${datesParam}&details=${encodeURIComponent(details || 'Scheduled via StudySync')}`;
+        window.open(url, '_blank');
     },
 
     // Modal Helpers

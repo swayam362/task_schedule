@@ -30,3 +30,4 @@ public class AIAdvisorController {
         return ResponseEntity.ok(aiAdvisorService.askAdvisor(userId, prompt));
     }
 }
+
