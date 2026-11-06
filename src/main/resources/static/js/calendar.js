@@ -234,3 +234,4 @@ const Calendar = {
         App.openCreateTaskModal(dateStr);
     }
 };
+

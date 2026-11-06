@@ -77,3 +77,4 @@ public class ScheduleSuggestionDTO {
     public List<SuggestedSlot> getSlots() { return slots; }
     public void setSlots(List<SuggestedSlot> slots) { this.slots = slots; }
 }
+

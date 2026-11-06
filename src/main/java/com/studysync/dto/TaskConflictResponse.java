@@ -40,3 +40,4 @@ public class TaskConflictResponse {
     public LocalTime getConflictingEndTime() { return conflictingEndTime; }
     public void setConflictingEndTime(LocalTime conflictingEndTime) { this.conflictingEndTime = conflictingEndTime; }
 }
+

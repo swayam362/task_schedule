@@ -18,3 +18,4 @@ public interface TaskRepository extends MongoRepository<Task, String> {
     List<Task> findByUserIdAndPriority(String userId, String priority);
     List<Task> findByUserIdAndDateLessThanEqualAndStatusIn(String userId, LocalDate date, Collection<String> statuses);
 }
+

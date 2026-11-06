@@ -93,6 +93,51 @@ const App = {
         if (prioritySelect) prioritySelect.addEventListener('change', triggerLoadTasks);
         if (statusSelect) statusSelect.addEventListener('change', triggerLoadTasks);
         if (dateSelect) dateSelect.addEventListener('change', triggerLoadTasks);
+
+        // Global Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+            
+            // Ctrl+K or Cmd+K
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                this.openGlobalSearchModal();
+                return;
+            }
+
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+                return;
+            }
+
+            if (!inInput) {
+                if (e.key.toLowerCase() === 'q') {
+                    e.preventDefault();
+                    this.openCreateTaskModal();
+                } else if (e.key.toLowerCase() === 'p') {
+                    e.preventDefault();
+                    this.switchView('pomodoro');
+                } else if (e.key.toLowerCase() === 'd') {
+                    e.preventDefault();
+                    this.switchView('dashboard');
+                } else if (e.key.toLowerCase() === 's') {
+                    e.preventDefault();
+                    this.switchView('schedule');
+                } else if (e.key.toLowerCase() === 'l') {
+                    e.preventDefault();
+                    this.switchView('learning');
+                } else if (e.key.toLowerCase() === 'a') {
+                    e.preventDefault();
+                    this.switchView('analytics');
+                } else if (e.key.toLowerCase() === 't') {
+                    e.preventDefault();
+                    this.toggleTheme();
+                } else if (e.key === '?') {
+                    e.preventDefault();
+                    this.openKeyboardShortcutsModal();
+                }
+            }
+        });
     },
 
     debounce(func, wait) {
@@ -1137,6 +1182,146 @@ const App = {
         }
     },
 
+    // AI Study Advisor
+    openAIAdvisorModal() {
+        this.openModal('modal-ai-advisor');
+        // Load initial analysis if empty
+        const respBox = document.getElementById('ai-advisor-response');
+        if (respBox && respBox.dataset.loaded !== 'true') {
+            this.askAIWithPrompt('Analyze my workload balance');
+        }
+    },
+
+    async askAIWithPrompt(prompt) {
+        const respBox = document.getElementById('ai-advisor-response');
+        if (!respBox) return;
+
+        respBox.innerHTML = `
+            <div style="display:flex; align-items:center; gap:0.5rem; color:var(--text-muted);">
+                <div style="width:16px; height:16px; border:2px solid var(--border-color); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
+                <span>Analyzing current workload, curriculum milestones, and deadlines...</span>
+            </div>
+            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        `;
+
+        try {
+            const data = await API.askAIAdvisor(prompt);
+            respBox.dataset.loaded = 'true';
+            respBox.innerHTML = `
+                <div style="font-weight:700; color:var(--primary); margin-bottom:0.5rem; font-size:1rem;">💡 ${data.title}</div>
+                <div>${data.answer.replace(/\n/g, '<br>')}</div>
+            `;
+        } catch (e) {
+            respBox.innerHTML = `<span style="color:#ef4444;">Failed to contact AI Advisor: ${e.message}</span>`;
+        }
+    },
+
+    askAICustomPrompt() {
+        const input = document.getElementById('ai-custom-prompt');
+        if (!input || !input.value.trim()) return;
+        const prompt = input.value.trim();
+        input.value = '';
+        this.askAIWithPrompt(prompt);
+    },
+
+    // Global Search (Ctrl+K)
+    openGlobalSearchModal() {
+        const modal = document.getElementById('modal-global-search');
+        const input = document.getElementById('global-search-input');
+        if (input) input.value = '';
+        this.handleGlobalSearch('');
+        this.openModal('modal-global-search');
+        if (input) setTimeout(() => input.focus(), 100);
+    },
+
+    handleGlobalSearch(query) {
+        const resultsEl = document.getElementById('global-search-results');
+        if (!resultsEl) return;
+
+        const q = query.toLowerCase().trim();
+        const paths = Learning.paths || [];
+        const matchingTopics = [];
+
+        paths.forEach(p => {
+            if (p.subjects) {
+                p.subjects.forEach(s => {
+                    if (s.chapters) {
+                        s.chapters.forEach(c => {
+                            if (c.topics) {
+                                c.topics.forEach(t => {
+                                    const matchTitle = t.title && t.title.toLowerCase().includes(q);
+                                    const matchDesc = t.description && t.description.toLowerCase().includes(q);
+                                    const matchNotes = t.notes && t.notes.toLowerCase().includes(q);
+                                    const matchPath = p.title && p.title.toLowerCase().includes(q);
+
+                                    if (!q || matchTitle || matchDesc || matchNotes || matchPath) {
+                                        matchingTopics.push({
+                                            pathId: p.id,
+                                            pathTitle: p.title,
+                                            subjectTitle: s.title,
+                                            chapterTitle: c.title,
+                                            topic: t
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        if (matchingTopics.length === 0) {
+            resultsEl.innerHTML = `
+                <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.875rem;">
+                    No topics or notes matched "${query}". Try searching for algorithms, concepts or courses.
+                </div>
+            `;
+            return;
+        }
+
+        resultsEl.innerHTML = matchingTopics.slice(0, 8).map(m => `
+            <div class="search-result-item" onclick="App.jumpToSearchTopic('${m.pathId}', '${m.topic.id}')">
+                <div>
+                    <div style="font-weight:600; font-size:0.925rem; color:var(--text-primary);">${m.topic.title}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">${m.pathTitle} &rarr; ${m.chapterTitle}</div>
+                    ${m.topic.notes ? `<div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">📝 ${m.topic.notes.substring(0, 70)}...</div>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="badge ${m.topic.status === 'Completed' ? 'badge-priority-low' : (m.topic.status === 'In Progress' ? 'badge-priority-medium' : 'badge-cat')}">${m.topic.status || 'Pending'}</span>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    jumpToSearchTopic(pathId, topicId) {
+        this.closeModal('modal-global-search');
+        this.switchView('learning');
+        Learning.selectPath(pathId);
+        Notifications.toast('Navigated to topic in curriculum!', 'info');
+    },
+
+    openKeyboardShortcutsModal() {
+        this.openModal('modal-keyboard-shortcuts');
+    },
+
+    // Data Backup & Export
+    async exportDataBackup() {
+        try {
+            const data = await API.exportData();
+            const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", jsonStr);
+            downloadAnchor.setAttribute("download", `studysync_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            Notifications.toast('StudySync full backup exported successfully!', 'success');
+        } catch (e) {
+            Notifications.toast('Failed to export backup: ' + e.message, 'error');
+        }
+    },
+
     // Modal Helpers
     openModal(modalId) {
         const modal = document.getElementById(modalId);
@@ -1153,3 +1338,4 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
+

@@ -13,3 +13,4 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
     List<Assignment> findByUserIdAndSubmissionDeadlineGreaterThanEqualOrderBySubmissionDeadlineAsc(String userId, LocalDate date);
     List<Assignment> findByUserIdAndStatus(String userId, String status);
 }
+

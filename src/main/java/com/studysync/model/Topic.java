@@ -52,3 +52,4 @@ public class Topic {
     public List<Subtopic> getSubtopics() { return subtopics; }
     public void setSubtopics(List<Subtopic> subtopics) { this.subtopics = subtopics; }
 }
+

@@ -11,3 +11,4 @@ public interface LearningPathRepository extends MongoRepository<LearningPath, St
     List<LearningPath> findByUserId(String userId);
     List<LearningPath> findByUserIdAndCategory(String userId, String category);
 }
+

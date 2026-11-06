@@ -357,3 +357,4 @@ const Learning = {
         App.openModal('modal-add-topic');
     }
 };
+

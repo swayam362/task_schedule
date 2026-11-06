@@ -28,3 +28,4 @@ public class SettingsController {
         return ResponseEntity.ok(settingsService.updateSettings(userId, settings));
     }
 }
+

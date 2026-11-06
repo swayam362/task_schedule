@@ -110,3 +110,4 @@ public class Task {
     public String getLinkedEntityType() { return linkedEntityType; }
     public void setLinkedEntityType(String linkedEntityType) { this.linkedEntityType = linkedEntityType; }
 }
+

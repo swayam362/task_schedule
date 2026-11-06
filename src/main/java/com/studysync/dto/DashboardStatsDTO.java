@@ -68,3 +68,4 @@ public class DashboardStatsDTO {
     public List<Assignment> getUpcomingAssignments() { return upcomingAssignments; }
     public void setUpcomingAssignments(List<Assignment> upcomingAssignments) { this.upcomingAssignments = upcomingAssignments; }
 }
+

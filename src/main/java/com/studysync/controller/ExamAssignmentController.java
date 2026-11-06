@@ -95,3 +95,4 @@ public class ExamAssignmentController {
         return ResponseEntity.ok(examAssignmentService.generateTaskForAssignment(id));
     }
 }
+

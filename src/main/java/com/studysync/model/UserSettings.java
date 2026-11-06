@@ -69,3 +69,4 @@ public class UserSettings {
     public int getLongBreakDuration() { return longBreakDuration; }
     public void setLongBreakDuration(int longBreakDuration) { this.longBreakDuration = longBreakDuration; }
 }
+

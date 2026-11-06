@@ -16,3 +16,4 @@ public interface RevisionRepository extends MongoRepository<Revision, String> {
     List<Revision> findByUserIdAndStatus(String userId, String status);
     List<Revision> findByUserIdAndTopicId(String userId, String topicId);
 }
+

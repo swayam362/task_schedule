@@ -109,6 +109,24 @@
             </div>
 
             <div class="header-right">
+                <!-- Global Syllabus & Topic Search (Ctrl+K) -->
+                <button class="btn btn-sm btn-secondary" onclick="App.openGlobalSearchModal()" title="Search Syllabus & Topics (Ctrl+K)" style="display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span style="font-size:0.8rem;">Search</span>
+                    <span class="kbd-badge">Ctrl+K</span>
+                </button>
+
+                <!-- AI Study Advisor Button -->
+                <button class="btn btn-sm btn-outline-primary" onclick="App.openAIAdvisorModal()" title="AI Study Advisor & Diagnostics">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>AI Advisor</span>
+                </button>
+
+                <!-- Keyboard Shortcuts Help Button -->
+                <button class="btn-icon" onclick="App.openKeyboardShortcutsModal()" title="Keyboard Shortcuts (?)">
+                    <span style="font-weight:700; font-size:0.95rem;">?</span>
+                </button>
+
                 <!-- Theme Toggle Button -->
                 <button class="btn-icon" id="btn-toggle-theme" title="Toggle Light / Dark Mode">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -754,8 +772,24 @@
                                 </label>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Save Settings</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%; margin-bottom:1.5rem;">Save Settings</button>
                         </form>
+
+                        <!-- Data Management & Offline Backups -->
+                        <div style="border-top:1px solid var(--border-color); padding-top:1.5rem;">
+                            <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);">Data Backup & Export</h4>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Download a complete JSON snapshot of your learning paths, tasks, revisions, and college exams for safe keeping or migration.</p>
+                            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                                <button type="button" class="btn btn-secondary" onclick="App.exportDataBackup()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Export Full Backup (.JSON)
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="window.print()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                    Print Daily Timetable
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1166,6 +1200,105 @@
         </div>
     </div>
 
+    <!-- 11. AI Study Advisor Modal -->
+    <div class="modal-overlay" id="modal-ai-advisor">
+        <div class="modal-container" style="max-width:650px;">
+            <div class="ai-advisor-header">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <div>
+                        <h3 style="font-size:1.15rem; font-weight:700; margin:0;">StudySync AI Study Advisor</h3>
+                        <span style="font-size:0.75rem; opacity:0.9;">Intelligent Workload Balancing & Strategic Guidance</span>
+                    </div>
+                </div>
+                <button class="modal-close" style="color:white;" onclick="App.closeModal('modal-ai-advisor')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+                    <span class="ai-chip" onclick="App.askAIWithPrompt('Analyze my workload balance')">📊 Workload Balance Analysis</span>
+                    <span class="ai-chip" onclick="App.askAIWithPrompt('Exam preparation strategy')">📝 Exam Prep Strategy</span>
+                    <span class="ai-chip" onclick="App.askAIWithPrompt('DSA and LeetCode progression')">⚡ DSA & LeetCode Roadmap</span>
+                    <span class="ai-chip" onclick="App.askAIWithPrompt('Study fatigue and routine balance')">🧘 Routine Optimization</span>
+                </div>
+
+                <div id="ai-advisor-response" class="ai-response-box" style="margin-bottom:1rem; min-height:160px;">
+                    Click any strategic prompt above or ask a specific question below to get real-time recommendations tailored to your curriculum and deadlines.
+                </div>
+
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-control" id="ai-custom-prompt" placeholder="Ask AI Advisor about your study schedule, exams, or revision..." onkeydown="if(event.key==='Enter') App.askAICustomPrompt()">
+                    <button class="btn btn-primary" onclick="App.askAICustomPrompt()">Ask</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 12. Global Syllabus & Topic Search Modal (Ctrl+K) -->
+    <div class="modal-overlay" id="modal-global-search">
+        <div class="modal-container" style="max-width:600px; padding:0;">
+            <div class="search-modal-input-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="search-modal-input" id="global-search-input" placeholder="Search topics, chapters, subjects, notes across all curriculums..." autofocus oninput="App.handleGlobalSearch(this.value)">
+                <button class="modal-close" onclick="App.closeModal('modal-global-search')">&times;</button>
+            </div>
+            <div class="search-results-list" id="global-search-results">
+                <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.875rem;">
+                    Start typing to search topics, LeetCode patterns, and notes across all courses...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 13. Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="modal-keyboard-shortcuts">
+        <div class="modal-container" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Keyboard Shortcuts</h3>
+                <button class="modal-close" onclick="App.closeModal('modal-keyboard-shortcuts')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:1rem 1.5rem;">
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Quick Add Task</span>
+                        <span class="kbd-badge">Q</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Focus Timer (Pomodoro)</span>
+                        <span class="kbd-badge">P</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Global Curriculum Search</span>
+                        <span class="kbd-badge">Ctrl + K</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Dashboard View</span>
+                        <span class="kbd-badge">D</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">My Schedule</span>
+                        <span class="kbd-badge">S</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">My Learning Tracker</span>
+                        <span class="kbd-badge">L</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Analytics & Insights</span>
+                        <span class="kbd-badge">A</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Toggle Light / Dark Mode</span>
+                        <span class="kbd-badge">T</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.875rem;">Show Keyboard Shortcuts</span>
+                        <span class="kbd-badge">?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div class="toast-container" id="toast-container"></div>
 
@@ -1180,3 +1313,4 @@
     <script src="/js/app.js"></script>
 </body>
 </html>
+

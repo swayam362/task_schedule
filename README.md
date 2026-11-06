@@ -149,3 +149,4 @@ The application automatically seeds a default CSE student profile (`Sainath`) an
 | `GET` | `/api/planner/suggest` | Generates rule-based daily study schedule suggestions |
 | `POST` | `/api/planner/apply` | Commits selected suggestions to user schedule |
 | `GET/PUT` | `/api/settings` | Gets or updates user personalization preferences |
+

@@ -12,3 +12,4 @@ public interface FocusSessionRepository extends MongoRepository<FocusSession, St
     List<FocusSession> findByUserId(String userId);
     List<FocusSession> findByUserIdAndCompletedAtBetween(String userId, LocalDateTime start, LocalDateTime end);
 }
+

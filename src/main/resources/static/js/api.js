@@ -355,5 +355,30 @@ const API = {
         });
         if (!res.ok) throw new Error('Failed to update settings');
         return await res.json();
+    },
+
+    // AI Study Advisor
+    async getAIAnalysis() {
+        const res = await fetch(`${API_BASE}/ai/analysis?userId=${CURRENT_USER_ID}`);
+        if (!res.ok) throw new Error('Failed to fetch AI study analysis');
+        return await res.json();
+    },
+
+    async askAIAdvisor(prompt) {
+        const res = await fetch(`${API_BASE}/ai/ask?userId=${CURRENT_USER_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+        if (!res.ok) throw new Error('Failed to consult AI advisor');
+        return await res.json();
+    },
+
+    // Data Export
+    async exportData() {
+        const res = await fetch(`${API_BASE}/data/export?userId=${CURRENT_USER_ID}`);
+        if (!res.ok) throw new Error('Failed to export data');
+        return await res.json();
     }
 };
+

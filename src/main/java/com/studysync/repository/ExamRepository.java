@@ -12,3 +12,4 @@ public interface ExamRepository extends MongoRepository<Exam, String> {
     List<Exam> findByUserId(String userId);
     List<Exam> findByUserIdAndExamDateGreaterThanEqualOrderByExamDateAsc(String userId, LocalDate date);
 }
+

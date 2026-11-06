@@ -40,3 +40,4 @@ public class PlannerController {
         return ResponseEntity.ok(plannerService.applyPlan(userId, date, slots));
     }
 }
+

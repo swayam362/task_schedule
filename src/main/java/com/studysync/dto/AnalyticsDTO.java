@@ -63,3 +63,4 @@ public class AnalyticsDTO {
     public Map<String, Long> getTaskStatusCounts() { return taskStatusCounts; }
     public void setTaskStatusCounts(Map<String, Long> taskStatusCounts) { this.taskStatusCounts = taskStatusCounts; }
 }
+

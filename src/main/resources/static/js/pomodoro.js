@@ -224,3 +224,4 @@ const Pomodoro = {
         this.setMode('focus');
     }
 };
+

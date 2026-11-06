@@ -12,3 +12,4 @@ public class StudySyncApplication {
         SpringApplication.run(StudySyncApplication.class, args);
     }
 }
+

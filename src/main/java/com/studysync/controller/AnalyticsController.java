@@ -21,3 +21,4 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsService.getAnalytics(userId));
     }
 }
+
